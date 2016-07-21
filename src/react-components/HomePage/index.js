@@ -1,22 +1,24 @@
 import React from 'react';
 import ProductList from '../Product/ProductList';
 var _ = require('lodash');
+import connectToStores from 'alt-utils/lib/connectToStores';
+import ProductStore from '../../stores/ProductStore';
+import Actions from '../../actions';
 
-
+@connectToStores
 class HomePage extends React.Component {
   constructor() {
     super();
-    this.state = {
-      productList: []
-    }
-  var db = firebase.database();
-  var firebaseRef = db.ref("/products");
-  firebaseRef.on('value', (snapshot) => {
-      var products = _.values(snapshot.val());
-      this.setState({
-        productList: products
-      })
-    });
+    Actions.getProducts();
+  }
+
+  static getStores() {
+    return [ProductStore];
+
+  }
+
+  static getPropsFromStores() {
+    return ProductStore.getState();
   }
 
   render() {
@@ -29,9 +31,9 @@ class HomePage extends React.Component {
         <section>
           <section className="container">
             {
-              this.state.productList
+              this.props.products
               ?
-              <ProductList productList={this.state.productList}/>
+              <ProductList productList={this.props.products}/>
               :
               null
             }

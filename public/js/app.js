@@ -37802,7 +37802,7 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":48}],181:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -37810,7 +37810,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _alt = require("../alt");
+var _alt = require('../alt');
 
 var _alt2 = _interopRequireDefault(_alt);
 
@@ -37818,6 +37818,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var _ = require('lodash');
 var firebase = require("firebase/app");
 require("firebase/auth");
 require("firebase/database");
@@ -37828,7 +37829,7 @@ var Actions = function () {
   }
 
   _createClass(Actions, [{
-    key: "initSession",
+    key: 'initSession',
     value: function initSession() {
       return function (dispatch) {
         var config = {
@@ -37864,7 +37865,7 @@ var Actions = function () {
       };
     }
   }, {
-    key: "login",
+    key: 'login',
     value: function login() {
       return function (dispatch) {
         var provider = new firebase.auth.FacebookAuthProvider();
@@ -37886,7 +37887,7 @@ var Actions = function () {
       };
     }
   }, {
-    key: "logout",
+    key: 'logout',
     value: function logout() {
       return function (dispatch) {
         firebase.auth().signOut().then(function () {
@@ -37901,6 +37902,18 @@ var Actions = function () {
         });
       };
     }
+  }, {
+    key: 'getProducts',
+    value: function getProducts() {
+      return function (dispatch) {
+        var db = firebase.database();
+        var firebaseRef = db.ref("/products");
+        firebaseRef.on('value', function (snapshot) {
+          var products = _.values(snapshot.val());
+          dispatch(products);
+        });
+      };
+    }
   }]);
 
   return Actions;
@@ -37908,7 +37921,7 @@ var Actions = function () {
 
 exports.default = _alt2.default.createActions(Actions);
 
-},{"../alt":182,"firebase/app":17,"firebase/auth":18,"firebase/database":19}],182:[function(require,module,exports){
+},{"../alt":182,"firebase/app":17,"firebase/auth":18,"firebase/database":19,"lodash":23}],182:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37932,6 +37945,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _class;
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -37939,6 +37954,18 @@ var _react2 = _interopRequireDefault(_react);
 var _ProductList = require('../Product/ProductList');
 
 var _ProductList2 = _interopRequireDefault(_ProductList);
+
+var _connectToStores = require('alt-utils/lib/connectToStores');
+
+var _connectToStores2 = _interopRequireDefault(_connectToStores);
+
+var _ProductStore = require('../../stores/ProductStore');
+
+var _ProductStore2 = _interopRequireDefault(_ProductStore);
+
+var _actions = require('../../actions');
+
+var _actions2 = _interopRequireDefault(_actions);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37950,7 +37977,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var _ = require('lodash');
 
-var HomePage = function (_React$Component) {
+var HomePage = (0, _connectToStores2.default)(_class = function (_React$Component) {
   _inherits(HomePage, _React$Component);
 
   function HomePage() {
@@ -37958,17 +37985,7 @@ var HomePage = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(HomePage).call(this));
 
-    _this.state = {
-      productList: []
-    };
-    var db = firebase.database();
-    var firebaseRef = db.ref("/products");
-    firebaseRef.on('value', function (snapshot) {
-      var products = _.values(snapshot.val());
-      _this.setState({
-        productList: products
-      });
-    });
+    _actions2.default.getProducts();
     return _this;
   }
 
@@ -37989,19 +38006,29 @@ var HomePage = function (_React$Component) {
           _react2.default.createElement(
             'section',
             { className: 'container' },
-            this.state.productList ? _react2.default.createElement(_ProductList2.default, { productList: this.state.productList }) : null
+            this.props.products ? _react2.default.createElement(_ProductList2.default, { productList: this.props.products }) : null
           )
         )
       );
     }
+  }], [{
+    key: 'getStores',
+    value: function getStores() {
+      return [_ProductStore2.default];
+    }
+  }, {
+    key: 'getPropsFromStores',
+    value: function getPropsFromStores() {
+      return _ProductStore2.default.getState();
+    }
   }]);
 
   return HomePage;
-}(_react2.default.Component);
+}(_react2.default.Component)) || _class;
 
 exports.default = HomePage;
 
-},{"../Product/ProductList":190,"lodash":23,"react":180}],184:[function(require,module,exports){
+},{"../../actions":181,"../../stores/ProductStore":193,"../Product/ProductList":190,"alt-utils/lib/connectToStores":1,"lodash":23,"react":180}],184:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38983,7 +39010,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _dec, _dec2, _class, _desc, _value, _class2;
+var _dec, _dec2, _dec3, _class, _desc, _value, _class2;
 
 var _alt = require('../alt');
 
@@ -39028,11 +39055,14 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
   return desc;
 }
 
-var ProductStore = (_dec = (0, _decorators.decorate)(_alt2.default), _dec2 = (0, _decorators.bind)(_actions2.default.login, _actions2.default.initSession, _actions2.default.logout), _dec(_class = (_class2 = function () {
+var ProductStore = (_dec = (0, _decorators.decorate)(_alt2.default), _dec2 = (0, _decorators.bind)(_actions2.default.login, _actions2.default.initSession, _actions2.default.logout), _dec3 = (0, _decorators.bind)(_actions2.default.getProducts), _dec(_class = (_class2 = function () {
   function ProductStore() {
     _classCallCheck(this, ProductStore);
 
-    this.state = { user: null };
+    this.state = {
+      user: null,
+      products: []
+    };
   }
 
   _createClass(ProductStore, [{
@@ -39040,10 +39070,15 @@ var ProductStore = (_dec = (0, _decorators.decorate)(_alt2.default), _dec2 = (0,
     value: function setUser(user) {
       this.setState({ user: user });
     }
+  }, {
+    key: 'getProducts',
+    value: function getProducts(products) {
+      this.setState({ products: products });
+    }
   }]);
 
   return ProductStore;
-}(), (_applyDecoratedDescriptor(_class2.prototype, 'setUser', [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, 'setUser'), _class2.prototype)), _class2)) || _class);
+}(), (_applyDecoratedDescriptor(_class2.prototype, 'setUser', [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, 'setUser'), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, 'getProducts', [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, 'getProducts'), _class2.prototype)), _class2)) || _class);
 exports.default = _alt2.default.createStore(ProductStore);
 
 },{"../actions":181,"../alt":182,"alt-utils/lib/decorators":2}],194:[function(require,module,exports){

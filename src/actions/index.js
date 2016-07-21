@@ -1,4 +1,5 @@
 import alt from '../alt';
+var _ = require('lodash');
 var firebase = require("firebase/app");
   require("firebase/auth");
   require("firebase/database");
@@ -70,6 +71,17 @@ class Actions {
         // An error happened.
         console.log("Logout failed");
       });
+    }
+  }
+
+  getProducts() {
+    return(dispatch) => {
+      var db = firebase.database();
+      var firebaseRef = db.ref("/products");
+      firebaseRef.on('value', (snapshot) => {
+          var products = _.values(snapshot.val());
+          dispatch(products);
+        });
     }
   }
 
