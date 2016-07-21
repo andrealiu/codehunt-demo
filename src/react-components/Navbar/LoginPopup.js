@@ -6,6 +6,7 @@ class LoginPopup extends React.Component {
 
   handleLogin = () => {
     Actions.login();
+    this.props.hidePopup();
   };
 
   render() {
