@@ -85,6 +85,14 @@ class Actions {
     }
   }
 
+  addProduct(product) {
+    return (dispatch) => {
+      var db = firebase.database();
+      var firebaseRef = db.ref("/products");
+      firebaseRef.push(product);
+    }
+  }
+
 }
 
 export default alt.createActions(Actions);
